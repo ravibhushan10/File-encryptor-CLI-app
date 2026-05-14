@@ -3,22 +3,29 @@
 > AES-256-CBC file encryption tool for Windows with HMAC-SHA256 integrity verification, batch mode, folder encryption, and a professional installer.
 
 [![Release](https://img.shields.io/badge/Download-v3.0.0-brightgreen?style=for-the-badge&logo=github)](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/tag/v3.0.0)
+[![winget](https://img.shields.io/badge/winget-RaviBhushan.fenc-blue?style=for-the-badge&logo=windows)](https://github.com/microsoft/winget-pkgs/pull/374796)
 [![Language](https://img.shields.io/badge/C++-17-blue?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
 [![OpenSSL](https://img.shields.io/badge/OpenSSL-3.x-red?style=for-the-badge&logo=openssl)](https://www.openssl.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE.txt)
 
 ---
 
-## Download
+## Installation
+
+### Option 1 — winget (Recommended)
+```cmd
+winget install RaviBhushan.fenc
+```
+> Opens any terminal (CMD, PowerShell, Windows Terminal) and type `fenc --help` — no restart needed.
+
+### Option 2 — Manual Installer
 
 | File | Size | Description |
 |---|---|---|
 | [fenc-v3.0.0-windows.exe](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/download/v3.0.0/fenc-v3.0.0-windows.exe) | ~3.5 MB | Windows installer — includes all required DLLs |
 
-**Install:** Double-click `fenc-v3.0.0-windows.exe` → follow wizard → `fenc` is ready in any terminal.
-
-> After install, open CMD, PowerShell, Git Bash, or Windows Terminal and type `fenc --help`. No restart needed.
+Double-click `fenc-v3.0.0-windows.exe` → follow wizard → `fenc` is ready in any terminal.
 
 ---
 
@@ -196,6 +203,7 @@ makensis installer.nsi
 File-encryptor-CLI-app/
 ├── CMakeLists.txt          # Build configuration
 ├── installer.nsi           # NSIS Windows installer script
+├── LICENSE.txt             # MIT License
 ├── include/
 │   ├── encryptor.h         # Encryption function declarations
 │   ├── decryptor.h         # Decryption function declarations
@@ -241,14 +249,42 @@ File-encryptor-CLI-app/
 
 ---
 
+## Contributing
+
+Contributions are welcome! Here's how:
+
+1. Fork this repository
+2. Create a new branch
+```bash
+git checkout -b feature/your-feature-name
+```
+3. Make your changes and commit
+```bash
+git commit -m "Add: your feature description"
+```
+4. Push to your fork
+```bash
+git push origin feature/your-feature-name
+```
+5. Open a Pull Request
+
+**Ideas for contributions:**
+- Linux/macOS support
+- ChaCha20 algorithm support
+- Key file support (use a file as password)
+- GUI version
+
+---
+
 ## Author
 
-**Ravi Bhushan**  
-B.Tech CSE — CT Institute of Engineering Management and Technology, Punjab  
+**Ravi Bhushan**
+B.Tech CSE — CT Institute of Engineering Management and Technology, Punjab
 GitHub: [@ravibhushan10](https://github.com/ravibhushan10)
 
 ---
 
 ## License
 
-MIT License — free to use, modify, and distribute.
+MIT License — free to use, modify, and distribute.  
+See [LICENSE.txt](LICENSE.txt) for full terms.
