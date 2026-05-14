@@ -1,6 +1,5 @@
 // color.h
-// ANSI color codes for terminal output.
-
+// Git-style clean terminal colors
 #pragma once
 #include <string>
 #include <iostream>
@@ -10,27 +9,32 @@ namespace Color {
     const std::string RED         = "\033[31m";
     const std::string GREEN       = "\033[32m";
     const std::string YELLOW      = "\033[33m";
-    const std::string BLUE        = "\033[34m";
-    const std::string CYAN        = "\033[36m";
-    const std::string BOLD_RED    = "\033[1;31m";
-    const std::string BOLD_GREEN  = "\033[1;32m";
-    const std::string BOLD_YELLOW = "\033[1;33m";
-    const std::string BOLD_CYAN   = "\033[1;36m";
+    const std::string WHITE       = "\033[97m";
     const std::string BOLD        = "\033[1m";
+    const std::string BOLD_WHITE  = "\033[1;97m";
+    const std::string BOLD_GREEN  = "\033[1;32m";
+    const std::string BOLD_RED    = "\033[1;31m";
+    const std::string BOLD_YELLOW = "\033[1;33m";
+    const std::string DIM         = "\033[2m";
 
+    // Git style: "error: message"
     inline void printSuccess(const std::string& msg) {
-        std::cout << BOLD_GREEN << "[OK] " << RESET << GREEN << msg << RESET << "\n";
+        std::cout << GREEN << msg << RESET << "\n";
     }
     inline void printError(const std::string& msg) {
-        std::cerr << BOLD_RED << "[ERR] " << RESET << RED << msg << RESET << "\n";
+        std::cerr << BOLD_RED << "error: " << RESET << msg << "\n";
     }
     inline void printWarning(const std::string& msg) {
-        std::cout << BOLD_YELLOW << "[!] " << RESET << YELLOW << msg << RESET << "\n";
+        std::cout << YELLOW << "warning: " << RESET << msg << "\n";
     }
     inline void printInfo(const std::string& msg) {
-        std::cout << BOLD_CYAN << "[i] " << RESET << CYAN << msg << RESET << "\n";
+        std::cout << DIM << msg << RESET << "\n";
     }
     inline void printHeader(const std::string& msg) {
-        std::cout << "\n" << BOLD_CYAN << "=== " << msg << " ===" << RESET << "\n\n";
+        std::cout << "\n" << BOLD_WHITE << msg << RESET << "\n";
+    }
+    inline void printDone(const std::string& from, const std::string& to) {
+        std::cout << GREEN << "  done  " << RESET
+                  << from << " -> " << BOLD_WHITE << to << RESET << "\n";
     }
 }

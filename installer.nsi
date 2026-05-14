@@ -1,16 +1,13 @@
 ; =====================================================
-; NSIS = Nullsoft Scriptable Install System
-; This script builds the Windows installer for FileEncryptor
+; NSIS installer for fenc (File Encryptor)
 ; =====================================================
 
-; --- Installer Metadata ---
-Name "File Encryptor"
-OutFile "FileEncryptorSetup.exe"
-InstallDir "$PROGRAMFILES64\FileEncryptor"
-InstallDirRegKey HKLM "Software\FileEncryptor" "Install_Dir"
+Name "fenc - File Encryptor"
+OutFile "fencSetup.exe"
+InstallDir "$PROGRAMFILES64\fenc"
+InstallDirRegKey HKLM "Software\fenc" "Install_Dir"
 RequestExecutionLevel admin
 
-; --- Modern UI (MUI = Modern User Interface) ---
 !include "MUI2.nsh"
 
 !insertmacro MUI_PAGE_WELCOME
@@ -23,69 +20,65 @@ RequestExecutionLevel admin
 
 !insertmacro MUI_LANGUAGE "English"
 
-; --- Version Info ---
-VIProductVersion "1.0.0.0"
-VIAddVersionKey "ProductName" "File Encryptor"
-VIAddVersionKey "ProductVersion" "1.0.0"
-VIAddVersionKey "FileDescription" "AES-256 File Encryption Tool"
-VIAddVersionKey "LegalCopyright" "Ravi Bhushan"
+VIProductVersion "3.0.0.0"
+VIAddVersionKey "ProductName"     "fenc - File Encryptor"
+VIAddVersionKey "ProductVersion"  "3.0.0"
+VIAddVersionKey "FileDescription" "AES-256 File Encryption CLI Tool"
+VIAddVersionKey "LegalCopyright"  "Ravi Bhushan"
+VIAddVersionKey "FileVersion"     "3.0.0"
 
-; --- Installation Section ---
+; --- Install ---
 Section "Install"
 
-    ; SETOUTPATH = sets the destination folder on the user's PC
     SetOutPath "$INSTDIR"
 
-    ; FILE = copies each file into the installer package
-    File "build\fileencryptor.exe"
+    File "build\fenc.exe"
     File "build\libcrypto-3-x64.dll"
     File "build\libgcc_s_seh-1.dll"
     File "build\libstdc++-6.dll"
     File "build\libwinpthread-1.dll"
 
-    ; Write install path to registry so uninstaller can find it
-    ; HKLM = HKEY_LOCAL_MACHINE — system-wide registry key
-    WriteRegStr HKLM "Software\FileEncryptor" "Install_Dir" "$INSTDIR"
+    ; Add to PATH using registry directly — simplest reliable method
+    ; Reads current PATH, appends our folder, writes back
+    ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "Path"
+    WriteRegExpandStr HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" \
+        "Path" "$0;$INSTDIR"
+    ; Broadcast so all open windows see the new PATH immediately
+    SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
-    ; Register uninstaller in Windows Add/Remove Programs
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FileEncryptor" \
-        "DisplayName" "File Encryptor"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FileEncryptor" \
+    WriteRegStr HKLM "Software\fenc" "Install_Dir" "$INSTDIR"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\fenc" \
+        "DisplayName" "fenc - File Encryptor"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\fenc" \
         "UninstallString" '"$INSTDIR\uninstall.exe"'
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FileEncryptor" \
-        "DisplayVersion" "1.0.0"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FileEncryptor" \
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\fenc" \
+        "DisplayVersion" "3.0.0"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\fenc" \
         "Publisher" "Ravi Bhushan"
 
-    ; Create the uninstaller exe inside install folder
     WriteUninstaller "$INSTDIR\uninstall.exe"
 
-    ; Create Start Menu shortcut folder
-    CreateDirectory "$SMPROGRAMS\FileEncryptor"
-    CreateShortcut "$SMPROGRAMS\FileEncryptor\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+    CreateDirectory "$SMPROGRAMS\fenc"
+    CreateShortcut "$SMPROGRAMS\fenc\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
 SectionEnd
 
-; --- Uninstall Section ---
+; --- Uninstall ---
 Section "Uninstall"
 
-    ; DELETE = removes files from the user's PC
-    Delete "$INSTDIR\fileencryptor.exe"
+    Delete "$INSTDIR\fenc.exe"
     Delete "$INSTDIR\libcrypto-3-x64.dll"
     Delete "$INSTDIR\libgcc_s_seh-1.dll"
     Delete "$INSTDIR\libstdc++-6.dll"
     Delete "$INSTDIR\libwinpthread-1.dll"
     Delete "$INSTDIR\uninstall.exe"
 
-    ; RMDIR = Remove Directory
     RMDir "$INSTDIR"
 
-    ; Remove Start Menu folder
-    Delete "$SMPROGRAMS\FileEncryptor\Uninstall.lnk"
-    RMDir "$SMPROGRAMS\FileEncryptor"
+    Delete "$SMPROGRAMS\fenc\Uninstall.lnk"
+    RMDir "$SMPROGRAMS\fenc"
 
-    ; Remove registry keys
-    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FileEncryptor"
-    DeleteRegKey HKLM "Software\FileEncryptor"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\fenc"
+    DeleteRegKey HKLM "Software\fenc"
 
 SectionEnd
