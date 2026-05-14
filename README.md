@@ -14,9 +14,9 @@
 
 | File | Size | Description |
 |---|---|---|
-| [fencSetup.exe](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/download/v3.0.0/fenc-v3.0.0-windows.exe) | ~3.5 MB | Windows installer — includes all required DLLs |
+| [fenc-v3.0.0-windows.exe](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/download/v3.0.0/fenc-v3.0.0-windows.exe) | ~3.5 MB | Windows installer — includes all required DLLs |
 
-**Install:** Double-click `fencSetup.exe` → follow wizard → `fenc` is ready in any terminal.
+**Install:** Double-click `fenc-v3.0.0-windows.exe` → follow wizard → `fenc` is ready in any terminal.
 
 > After install, open CMD, PowerShell, Git Bash, or Windows Terminal and type `fenc --help`. No restart needed.
 
