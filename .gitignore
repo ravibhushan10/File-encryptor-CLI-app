@@ -1,25 +1,25 @@
-cat > ~/File-encryptor/.gitignore << 'EOF'
-# Build output
+
+
 build/
+fenc-v3.0.0-windows.exe
+*.exe
 
-# Installers
-FileEncryptorSetup.exe
-fencSetup.exe
-
-# Test files
 *.enc
 *.dec
-*.txt
-!README.md
 
-# NSIS helper files
+*.txt
+!LICENSE.txt
+
 EnvVarUpdate.nsh
 StrContains.nsh
 
-# VS Code
 .vscode/
 
-# Windows junk
 Thumbs.db
+
 Desktop.ini
-EOF
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
