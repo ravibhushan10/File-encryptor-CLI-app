@@ -1,4 +1,4 @@
-# FileEncryptor CLI
+# fenc — File Encryptor CLI
 
 > AES-256-CBC file encryption tool for Windows with HMAC-SHA256 integrity verification, batch mode, folder encryption, and a professional installer.
 
@@ -14,9 +14,11 @@
 
 | File | Size | Description |
 |---|---|---|
-| [FileEncryptorSetup.exe](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/download/v3.0.0/FileEncryptorSetup.exe) | 3.51 MB | Windows installer — includes all required DLLs |
+| [fencSetup.exe](https://github.com/ravibhushan10/File-encryptor-CLI-app/releases/download/v3.0.0/fencSetup.exe) | ~3.5 MB | Windows installer — includes all required DLLs |
 
-**Install:** Double-click → follow wizard → use from any Command Prompt.
+**Install:** Double-click `fencSetup.exe` → follow wizard → `fenc` is ready in any terminal.
+
+> After install, open CMD, PowerShell, Git Bash, or Windows Terminal and type `fenc --help`. No restart needed.
 
 ---
 
@@ -25,15 +27,14 @@
 - **AES-256-CBC Encryption** — industry-standard symmetric encryption
 - **PBKDF2-HMAC-SHA256 Key Derivation** — 100,000 iterations, unique salt per file
 - **HMAC-SHA256 Integrity Verification** — detects tampering before decryption
-- **Metadata Header** — stores original filename, timestamp, and algorithm inside encrypted file
+- **Metadata Header** — stores original filename, timestamp, and algorithm inside the encrypted file
 - **Batch Mode** — encrypt/decrypt multiple files in one command
 - **Folder Mode** — recursively encrypt/decrypt entire directories
-- **Colored Terminal Output** — green for success, red for errors, cyan for info
-- **Progress Bar** — real-time progress for large files
+- **Progress Bar** — shown only for large files (>1MB), no noise for small files
 - **Verbose Mode** — prints every internal step (salt, IV, key derivation, HMAC)
-- **Custom Output Path** — `--output` flag for full control
+- **Custom Output Path** — `-o` flag for full control over output location
 - **Secure Memory Wiping** — passwords zeroed from RAM immediately after use
-- **Windows Installer** — built with NSIS, registers in Add/Remove Programs
+- **Windows Installer** — built with NSIS, adds `fenc` to system PATH automatically
 
 ---
 
@@ -48,62 +49,67 @@ Ciphertext       →  HMAC-SHA256                               →  Integrity T
 **.enc file layout:**
 ```
 [ Salt (32 bytes) | IV (16 bytes) | HMAC (32 bytes) | Ciphertext ]
-         ↑ header read first on decrypt, key re-derived, HMAC verified before decryption
 ```
+On decrypt: salt and IV are read first, key is re-derived, HMAC is verified — then decryption begins.
 
 **Metadata (encrypted inside ciphertext):**
 ```
 [ MAGIC (8) | Version (1) | Algorithm (1) | Timestamp (8) | FilenameLen (2) | Filename ]
 ```
+Original filename and timestamp are restored automatically on decrypt.
 
 ---
 
 ## Usage
 
+```
+fenc <command> -f <file> -p <password> [options]
+```
+
 ### Encrypt a file
 ```cmd
-fileencryptor encrypt --file secret.txt --password mypassword
+fenc enc -f secret.txt -p mypassword
 ```
 
 ### Decrypt a file
 ```cmd
-fileencryptor decrypt --file secret.txt.enc --password mypassword
+fenc dec -f secret.txt.enc -p mypassword
 ```
 
 ### Encrypt with verbose output
 ```cmd
-fileencryptor encrypt --file secret.txt --password mypassword --verbose
+fenc enc -f secret.txt -p mypassword -v
 ```
 
 ### Custom output path
 ```cmd
-fileencryptor encrypt --file secret.txt --password mypassword --output out\secret.enc
-fileencryptor decrypt --file out\secret.enc --password mypassword --output restored.txt
+fenc enc -f secret.txt -p mypassword -o out\secret.enc
+fenc dec -f out\secret.enc -p mypassword -o restored.txt
 ```
 
 ### Batch encrypt multiple files
 ```cmd
-fileencryptor encrypt-batch --files a.txt b.txt c.txt --password mypassword
+fenc enc-batch -f a.txt b.txt c.txt -p mypassword
 ```
 
 ### Batch decrypt multiple files
 ```cmd
-fileencryptor decrypt-batch --files a.txt.enc b.txt.enc c.txt.enc --password mypassword
+fenc dec-batch -f a.txt.enc b.txt.enc c.txt.enc -p mypassword
 ```
 
 ### Encrypt entire folder
 ```cmd
-fileencryptor encrypt-folder --folder C:\SensitiveData --password mypassword
+fenc enc-folder -d C:\SensitiveData -p mypassword
 ```
 
 ### Decrypt entire folder
 ```cmd
-fileencryptor decrypt-folder --folder C:\SensitiveData --password mypassword
+fenc dec-folder -d C:\SensitiveData -p mypassword
 ```
 
-### Check version
+### Version info
 ```cmd
-fileencryptor --version
+fenc --version
 ```
 
 ---
@@ -111,33 +117,40 @@ fileencryptor --version
 ## Demo
 
 ```
-+======================================+
-|     FileEncryptor  v3.0              |
-|     AES-256-CBC + HMAC-SHA256        |
-|     by Ravi Bhushan                  |
-+======================================+
+$ fenc --help
 
-=== Encrypting: secret.txt ===
-[i] File size: 1048576 bytes
-Reading    [########################################] 100%
-[i] Metadata built -- filename: secret.txt, algo: AES-256-CBC
-[i] Salt generated  -- 32 random bytes
-[i] IV generated    -- 16 random bytes
-[i] Key derived via PBKDF2-HMAC-SHA256 (100000 iterations)
-[i] AES-256-CBC cipher initialized
-Encrypting [########################################] 100%
-[i] HMAC-SHA256 tag computed -- 32 bytes
-[OK] Done: secret.txt -> secret.txt.enc  [1.00 MB -> 1.00 MB]
+fenc v3.0.0  File Encryptor - AES-256
+by Ravi Bhushan
 
-=== Decrypting: secret.txt.enc ===
-Reading    [########################################] 100%
-[i] HMAC verified -- file integrity confirmed
-Decrypting [########################################] 100%
-[i]   Version   : 1
-[i]   Algorithm : AES-256-CBC
-[i]   Encrypted : 2026-05-15 01:46:27
-[i]   Filename  : secret.txt
-[OK] Done: secret.txt.enc -> secret.txt  [1.00 MB -> 1.00 MB]
+USAGE
+  fenc <command> -f <file> -p <password> [options]
+
+ENCRYPT
+  enc          Encrypt a file      fenc enc -f secret.txt -p mypass
+  enc-batch    Encrypt multiple    fenc enc-batch -f a.txt b.txt -p mypass
+  enc-folder   Encrypt a folder    fenc enc-folder -d ./docs -p mypass
+
+DECRYPT
+  dec          Decrypt a file      fenc dec -f secret.txt.enc -p mypass
+  dec-batch    Decrypt multiple    fenc dec-batch -f a.enc b.enc -p mypass
+  dec-folder   Decrypt a folder    fenc dec-folder -d ./docs -p mypass
+
+OPTIONS
+  -o, --output    Custom output path
+  -v, --verbose   Show detailed steps
+  -V, --version   Show version
+  -h, --help      Show this message
+
+
+$ fenc enc -f secret.txt -p mypass
+  done  secret.txt -> secret.txt.enc
+
+$ fenc dec -f secret.txt.enc -p mypass
+integrity check passed
+  done  secret.txt.enc -> secret.txt
+
+$ fenc dec -f secret.txt.enc -p wrongpass
+error: integrity check failed -- wrong password or file tampered
 ```
 
 ---
@@ -149,7 +162,7 @@ Decrypting [########################################] 100%
 - GCC 16+ (`mingw-w64-ucrt-x86_64-gcc`)
 - CMake 3.15+ (`mingw-w64-ucrt-x86_64-cmake`)
 - OpenSSL 3.x (`mingw-w64-ucrt-x86_64-openssl`)
-- NSIS 3.x (`mingw-w64-ucrt-x86_64-nsis`) — for installer only
+- NSIS 3.x — for installer only
 
 ```bash
 # Clone
@@ -162,7 +175,7 @@ cmake .. -G "MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=/ucrt64/bin/mingw32-make
 cmake --build .
 
 # Run
-./fileencryptor.exe --help
+./fenc.exe --help
 ```
 
 **Build installer:**
@@ -186,14 +199,14 @@ File-encryptor-CLI-app/
 ├── include/
 │   ├── encryptor.h         # Encryption function declarations
 │   ├── decryptor.h         # Decryption function declarations
-│   ├── color.h             # ANSI colored terminal output
-│   ├── progress.h          # CLI progress bar
+│   ├── color.h             # Git-style colored terminal output
+│   ├── progress.h          # CLI progress bar (large files only)
 │   ├── hmac.h              # HMAC-SHA256 integrity verification
 │   ├── filehandler.h       # File utility helpers
 │   ├── utils.h             # Secure memory wipe + path validation
 │   └── CLI11.hpp           # Command line argument parser
 └── src/
-    ├── main.cpp            # Entry point, CLI routing
+    ├── main.cpp            # Entry point, CLI routing, help screen
     ├── encryptor.cpp       # AES-256-CBC encryption implementation
     ├── decryptor.cpp       # AES-256-CBC decryption implementation
     ├── filehandler.cpp     # File existence checking
@@ -209,8 +222,8 @@ File-encryptor-CLI-app/
 | C++17 | Core language |
 | OpenSSL 3.x | AES-256-CBC, PBKDF2, HMAC-SHA256 |
 | CLI11 | Command line argument parsing |
-| CMake | Cross-platform build system |
-| NSIS | Windows installer generation |
+| CMake | Build system |
+| NSIS | Windows installer with PATH registration |
 | std::filesystem | Recursive folder traversal |
 | SecureZeroMemory | Password wiping from RAM |
 
@@ -222,16 +235,16 @@ File-encryptor-CLI-app/
 |---|---|
 | Brute force password attack | PBKDF2 with 100,000 iterations — 100,000x slower per attempt |
 | Same password produces same key | Random 32-byte salt per file — every encryption is unique |
-| File tampering / corruption | HMAC-SHA256 verified before decryption — rejects modified files |
-| Password in RAM after use | SecureZeroMemory wipes password bytes immediately after use |
+| File tampering or corruption | HMAC-SHA256 verified before decryption — rejects modified files |
+| Password left in RAM | SecureZeroMemory wipes password bytes immediately after use |
 | IV reuse | Random 16-byte IV per file — prevents pattern analysis |
 
 ---
 
 ## Author
 
-**Ravi Bhushan**
-B.Tech CSE — CT Institute of Engineering Management and Technology, Punjab
+**Ravi Bhushan**  
+B.Tech CSE — CT Institute of Engineering Management and Technology, Punjab  
 GitHub: [@ravibhushan10](https://github.com/ravibhushan10)
 
 ---
